@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29728.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GZipTest.Console", "GZipTest.Console\GZipTest.Console.csproj", "{D4648349-6811-4443-A9EC-5C91E1B2AB19}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GZipTest.TestCompressionMethod", "GZipTest.TestCompressionMethod\GZipTest.TestCompressionMethod.csproj", "{2071A18F-E1B9-4EB7-8FEF-C57186AE6081}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GZipTest.Common", "GZipTest.Common\GZipTest.Common.csproj", "{6734E5B8-FD66-4F44-B86D-3C20FC2AADC7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D4648349-6811-4443-A9EC-5C91E1B2AB19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4648349-6811-4443-A9EC-5C91E1B2AB19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4648349-6811-4443-A9EC-5C91E1B2AB19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4648349-6811-4443-A9EC-5C91E1B2AB19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2071A18F-E1B9-4EB7-8FEF-C57186AE6081}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2071A18F-E1B9-4EB7-8FEF-C57186AE6081}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2071A18F-E1B9-4EB7-8FEF-C57186AE6081}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2071A18F-E1B9-4EB7-8FEF-C57186AE6081}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6734E5B8-FD66-4F44-B86D-3C20FC2AADC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6734E5B8-FD66-4F44-B86D-3C20FC2AADC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6734E5B8-FD66-4F44-B86D-3C20FC2AADC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6734E5B8-FD66-4F44-B86D-3C20FC2AADC7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B90EEE76-1F6C-4678-A7D8-EA4FA253D671}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://nb-ales/defaultcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = GZipTest.Console\\GZipTest.Console.csproj
+		SccProjectName1 = GZipTest.Console
+		SccLocalPath1 = GZipTest.Console
+		SccProjectUniqueName2 = GZipTest.Common\\GZipTest.Common.csproj
+		SccProjectName2 = GZipTest.Common
+		SccLocalPath2 = GZipTest.Common
+		SccProjectUniqueName3 = GZipTest.TestCompressionMethod\\GZipTest.TestCompressionMethod.csproj
+		SccProjectName3 = GZipTest.TestCompressionMethod
+		SccLocalPath3 = GZipTest.TestCompressionMethod
+	EndGlobalSection
+EndGlobal

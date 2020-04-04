@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GZipTest": {
+      "commandName": "Project",
+      "commandLineArgs": "decompress c:\\Temp\\GZipTest\\output.tgz c:\\Temp\\GZipTest\\20180512_171057-decompressed.mp4"
+    }
+  }
+}
