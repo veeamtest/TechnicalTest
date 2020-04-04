@@ -60,7 +60,7 @@ namespace GZipTest.TestCompressionMethod
         {
             Contract.IsNotNull(sourceStream);
             Contract.IsNotNull(destinationStream);
-            var currentBlockIndex = 0;
+            var blockIndex = 0;
             this._blockResults = new List<BlockResult>();
             var source = new CancellationTokenSource();
             if (this.CompressionMode == CompressionMode.Decompress)
@@ -75,45 +75,11 @@ namespace GZipTest.TestCompressionMethod
                 this.WriteEmptyHeaderOfStream(destinationBinaryWriter); //write empty space to the beginning, so we can use it at the end
             }
 
-            //generate the block processors
+            //generate and run the block processors
             List<IBlockProcessor> blockProcessors = this.RunBlockProcessors(blockDistributor, this.GetBlockCount(sourceStream), this._cancellationTokenSource.Token);
-            while ((blockProcessors.Any(p => p.State == BlockProcessor.BlockProcessorState.Started) || this._blockResults.Count > 0) && !this._cancellationTokenSource.IsCancellationRequested)
-            { //there is at least one running block processor or at least one block result and cancellation was not requested
-                if (this._blockResults.Count > 0)
-                { //there is a block result
-                    BlockResult blockResult;
-                    lock (this._blockResults)
-                    {
-                        blockResult = this._blockResults.FirstOrDefault(r => r.BlockIndex == currentBlockIndex); //let's try to select block result with current index
-                    }
 
-                    while (blockResult != null)
-                    { //we have block result with current index
-                        lock (this._blockResults)
-                        {
-                            this._blockResults.Remove(blockResult);
-                        }
-
-                        if (this.CompressionMode == CompressionMode.Compress)
-                        {
-                            this.WriteHeaderOfBlock(destinationBinaryWriter, blockResult); //write block header for compression
-                        }
-
-                        blockResult.BlockStream.CopyTo(destinationStream); //copy block result to the destination stream
-                        blockResult.Dispose();
-                        currentBlockIndex++;
-                        lock (this._blockResults)
-                        {
-                            blockResult = this._blockResults.FirstOrDefault(r => r.BlockIndex == currentBlockIndex); //let's try to select block result with current index
-                        }
-                    }
-                }
-
-                if (blockProcessors.Any(p => p.State == BlockProcessor.BlockProcessorState.Started))
-                { //there is at least one started processor, we want to wait for next block result
-                    this._newBlockReadyOrBlockProcessorFinishedOrErrorAutoResetEvent.WaitOne();
-                }
-            }
+            //process the block results
+            blockIndex = this.ProcessBlockResults(destinationStream, blockProcessors, blockIndex, destinationBinaryWriter);
 
             (blockDistributor as IDisposable)?.Dispose();
             if (this._exception != null)
@@ -123,7 +89,7 @@ namespace GZipTest.TestCompressionMethod
 
             if (this.CompressionMode == CompressionMode.Compress)
             {
-                this.WriteHeader(currentBlockIndex, destinationBinaryWriter); //write the archive file header for compression
+                this.WriteHeader(blockIndex, destinationBinaryWriter); //write the archive file header for compression
             }
         }
 
@@ -184,6 +150,52 @@ namespace GZipTest.TestCompressionMethod
             }
 
             this._newBlockReadyOrBlockProcessorFinishedOrErrorAutoResetEvent.Set(); //wake up the processing thread
+        }
+
+        /// <summary>
+        /// Waits for the block results and writes them to the destination stream with correct order
+        /// </summary>
+        private int ProcessBlockResults(Stream destinationStream, List<IBlockProcessor> blockProcessors, int currentBlockIndex, BinaryWriter destinationBinaryWriter)
+        {
+            while ((blockProcessors.Any(p => p.State == BlockProcessor.BlockProcessorState.Started) || this._blockResults.Count > 0) && !this._cancellationTokenSource.IsCancellationRequested)
+            { //there is at least one running block processor or at least one block result and cancellation was not requested
+                if (this._blockResults.Count > 0)
+                { //there is a block result
+                    BlockResult blockResult;
+                    lock (this._blockResults)
+                    {
+                        blockResult = this._blockResults.FirstOrDefault(r => r.BlockIndex == currentBlockIndex); //let's try to select block result with current index
+                    }
+
+                    while (blockResult != null)
+                    { //we have block result with current index
+                        lock (this._blockResults)
+                        {
+                            this._blockResults.Remove(blockResult);
+                        }
+
+                        if (this.CompressionMode == CompressionMode.Compress)
+                        {
+                            this.WriteHeaderOfBlock(destinationBinaryWriter, blockResult); //write block header for compression
+                        }
+
+                        blockResult.BlockStream.CopyTo(destinationStream); //copy block result to the destination stream
+                        blockResult.Dispose();
+                        currentBlockIndex++;
+                        lock (this._blockResults)
+                        {
+                            blockResult = this._blockResults.FirstOrDefault(r => r.BlockIndex == currentBlockIndex); //let's try to select block result with current index
+                        }
+                    }
+                }
+
+                if (blockProcessors.Any(p => p.State == BlockProcessor.BlockProcessorState.Started))
+                { //there is at least one started processor, we want to wait for next block result
+                    this._newBlockReadyOrBlockProcessorFinishedOrErrorAutoResetEvent.WaitOne();
+                }
+            }
+
+            return currentBlockIndex;
         }
 
         /// <summary>

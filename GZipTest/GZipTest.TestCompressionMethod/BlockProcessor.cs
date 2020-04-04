@@ -73,7 +73,7 @@ namespace GZipTest.TestCompressionMethod
         protected virtual void OnNewResult(BlockProcessorResultEventArgs e) => this.NewResult?.Invoke(this, e);
 
         /// <summary>
-        ///     Processed one block
+        ///     Processes one block
         ///     Includes both compression and decompression logic
         ///     The logic might be refactored and injected to the block processor, but was not for simplicity
         /// </summary>
