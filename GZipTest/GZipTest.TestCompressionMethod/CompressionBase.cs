@@ -153,39 +153,36 @@ namespace GZipTest.TestCompressionMethod
         }
 
         /// <summary>
-        /// Waits for the block results and writes them to the destination stream with correct order
+        ///     Waits for the block results and writes them to the destination stream with correct order
         /// </summary>
         private int ProcessBlockResults(Stream destinationStream, List<IBlockProcessor> blockProcessors, int currentBlockIndex, BinaryWriter destinationBinaryWriter)
         {
-            while ((blockProcessors.Any(p => p.State == BlockProcessor.BlockProcessorState.Started) || this._blockResults.Count > 0) && !this._cancellationTokenSource.IsCancellationRequested)
+            while ((this._blockResults.Count > 0 || blockProcessors.Any(p => p.State == BlockProcessor.BlockProcessorState.Started)) && !this._cancellationTokenSource.IsCancellationRequested)
             { //there is at least one running block processor or at least one block result and cancellation was not requested
-                if (this._blockResults.Count > 0)
-                { //there is a block result
-                    BlockResult blockResult;
+                BlockResult blockResult;
+                lock (this._blockResults)
+                {
+                    blockResult = this._blockResults.FirstOrDefault(r => r.BlockIndex == currentBlockIndex); //let's try to select block result with current index
+                }
+
+                while (blockResult != null)
+                { //we have block result with current index
+                    lock (this._blockResults)
+                    {
+                        this._blockResults.Remove(blockResult);
+                    }
+
+                    if (this.CompressionMode == CompressionMode.Compress)
+                    {
+                        this.WriteHeaderOfBlock(destinationBinaryWriter, blockResult); //write block header for compression
+                    }
+
+                    blockResult.BlockStream.CopyTo(destinationStream); //copy block result to the destination stream
+                    blockResult.Dispose();
+                    currentBlockIndex++;
                     lock (this._blockResults)
                     {
                         blockResult = this._blockResults.FirstOrDefault(r => r.BlockIndex == currentBlockIndex); //let's try to select block result with current index
-                    }
-
-                    while (blockResult != null)
-                    { //we have block result with current index
-                        lock (this._blockResults)
-                        {
-                            this._blockResults.Remove(blockResult);
-                        }
-
-                        if (this.CompressionMode == CompressionMode.Compress)
-                        {
-                            this.WriteHeaderOfBlock(destinationBinaryWriter, blockResult); //write block header for compression
-                        }
-
-                        blockResult.BlockStream.CopyTo(destinationStream); //copy block result to the destination stream
-                        blockResult.Dispose();
-                        currentBlockIndex++;
-                        lock (this._blockResults)
-                        {
-                            blockResult = this._blockResults.FirstOrDefault(r => r.BlockIndex == currentBlockIndex); //let's try to select block result with current index
-                        }
                     }
                 }
 
