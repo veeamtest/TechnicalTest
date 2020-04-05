@@ -6,7 +6,7 @@ GZipTest.Common - few common classes that are used across projects or might be u
 GZipTest.TestCompressionMethod - concrete implementation of compression method
 
 # Architecture:
-Console uses an implementation of block compression method, GZipTest.TestCompressionMethod.TestCompressionMethod in our case.
+Console uses an implementation of block compression method, TestCompressionMethod in our case.
 
 Depending on the type of an action, TestCompressionMethod uses TestCompression or TestDecompression internally. Both TestCompression and TestDecompression are descendants of CompressionBase.
 
